@@ -1,10 +1,10 @@
-module.exports = function(app){
+module.exports = function(app, mongoose){
 	app.get('/test', function(req, res) {
 		res.send("ok");
 	});
 	
 	app.get('/login', function(req, res){
-		res.render('login.js', {message : req.flash('loginMessage')});
+		res.render('login.js');
 	});
 		
 	app.post('/login', function(req, res){
