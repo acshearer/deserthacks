@@ -21,6 +21,10 @@ app.use(function(req, res, next) {
 	}
 });
 
+// static file handling
+app.use(express.static(__dirname + '/views'));
+app.set('view engine', 'ejs')
+
 // initialize the routes
 require('./app/routes.js')(app);
 
