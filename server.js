@@ -30,8 +30,11 @@ require('./app/routes.js')(app);
 
 
 // initialize the database
+mongoose.Promise = require('bluebird');
 var configDB = require('./app/database.js');
 mongoose.connect(configDB.url);
+
+//assert.equal(query.exec().constructor, require('bluebird'));
 
 
 // start the server
