@@ -36,3 +36,4 @@ require('./app/passport')(passport);
 // start the server
 var port_number = (process.env.PORT || 3000);
 app.listen(port_number);
+console.log('Server is running on 3000...');
