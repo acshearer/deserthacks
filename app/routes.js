@@ -11,43 +11,43 @@ module.exports = function(app, mongoose){
 		
 	});
 
-	app.get('/createEvent', function(req, res) {
+	app.get('/createevent', function(req, res) {
 		
 	});
 
-	app.get('/contactFriend', function(req, res) {
+	app.get('/contactfriend', function(req, res) {
 		
 	});
 
-	app.get('/findEvent', function(req, res) {
+	app.get('/findevent', function(req, res) {
 		
 	});
 
-	app.get('/friendProfile', function(req, res) {
+	app.get('/friendprofile', function(req, res) {
 		
 	});
 
-	app.get('/addFriend', function(req, res) {
+	app.get('/addfriend', function(req, res) {
 		
 	});
 
-	app.get('/removeFriend', function(req, res) {
+	app.get('/removefriend', function(req, res) {
 		
 	});
 
-	app.get('/addSchedule', function(req, res) {
+	app.get('/addschedule', function(req, res) {
 		
 	});
 
-	app.get('/removeScheduleElement', function(req, res) {
+	app.get('/removescheduleelement', function(req, res) {
 		
 	});
 
-	app.get('/addEvent', function(req, res) {
+	app.get('/addevent', function(req, res) {
 		
 	});
 
-	app.get('/changeUserVisibility', function(req, res) {
+	app.get('/changeuservisibility', function(req, res) {
 		
 	});
 }
