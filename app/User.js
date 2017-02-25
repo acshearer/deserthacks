@@ -16,6 +16,14 @@ var schema = mongoose.Schema({
 										start_time : Time,
 										end_time : Time}],
 		}
-	}}, { minimize : false });
+	},
+	events : {
+		tags : [tag: String],
+		friendVisible : [friendId : String],
+		time : [time_started : Date, time_ended: Date],
+		name : String,
+		description: String,
+		}
+	}, { minimize : false });
 
 module.exports = mongoose.model('User', schema);

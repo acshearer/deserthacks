@@ -1,4 +1,3 @@
 module.exports = {
-	'url1' : 'mongodb://steven85048:terry987@olympia.modulusmongo.net:27017/sywAqy8s',
-	'url2' : 'mongodb://steven85048:terry987@olympia.modulusmongo.net:27017/vepO3bep'
+	'url' : 'mongodb://steven85048:terry987@ds161049.mlab.com:61049/scheduler999',
 };

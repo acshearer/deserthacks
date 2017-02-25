@@ -31,13 +31,10 @@ require('./app/routes.js')(app);
 
 // initialize the database
 var configDB = require('./app/database.js');
-
-// configure database
-var connectionUser = mongoose.createConnection(configDB.url1);
-var connectionEvent =  mongoose.createConnection(configDB.url2);
+mongoose.connect(configDB.url);
 
 
 // start the server
-var port_number = (process.env.PORT || 3000);
+var port_number = (process.env.PORT || 8550);
 app.listen(port_number);
 console.log('Server is running on ' + port_number + '...');
