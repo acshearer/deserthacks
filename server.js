@@ -33,6 +33,8 @@ require('./app/routes.js')(app);
 var configDB = require('./app/database.js');
 
 // configure database
+mongoose.Promise = require('bluebird');
+//assert.equal(query.exec().constructor, require('bluebird'));
 var connectionUser = mongoose.createConnection(configDB.url1);
 var connectionEvent =  mongoose.createConnection(configDB.url2);
 
