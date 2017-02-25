@@ -24,14 +24,14 @@ app.use(function(req, res, next) {
 // initialize the routes
 require('./app/routes.js')(app);
 
-/**
+
 // initialize the database
 var configDB = require('./app/database.js');
 
 // configure database
-mongoose.connect(configDB.url);
-require('./app/passport')(passport);
-**/
+var connectionUser = mongoose.createConnection(configDB.url1);
+var connectionEvent =  mongoose.createConnection(configDB.url2);
+
 
 // start the server
 var port_number = (process.env.PORT || 3000);
