@@ -1,3 +1,4 @@
+var Event = require('../app/Event.js');
 var User = require('../app/User.js');
 var bodyParser = require('body-parser');
 
@@ -34,18 +35,27 @@ module.exports = function(app, passport){
 	
 	app.post('/createevent', function(req, res) {
 		var events = req.body;
-		var user = req.user;
-		console.log(req.body);
-		var userEvent = JSON.parse(events);
-		user.user.data.events.push(userEvent);
+		console.log(req.body); 
+		var newEvent = new Event();
+		
+		newEvent.events.tags = events.tags;
+		newEvent.events.friends = events.friends;
+		newEvent.events.time_started = events.time_started;
+		newEvent.events.time_ended = events.time_ended;
+		newEvent.events.name = events.name;
+		newEvent.events.description = events.description;
+
+        newEvent.save(function(err) {
+            console.log(err);
+		});
 	});
 
-	app.post('/findeventByTag', function(req, res) {
+	app.post('/findEventByTag', function(req, res) {
 		var tagList = req.body.tags;
 		var eventList = [];
 		
 		for (var i = 0 ; i < tagList.length; i++) {
-			var currTab = eventList[i];
+			var currTag = eventList[i];
 			//User.aggregate([{$match: { 'user.data.events.tags' }}]);
 		}
 	});
@@ -59,21 +69,11 @@ module.exports = function(app, passport){
 		var eventList = [];
 		
 		for (var i = 0 ; i < friendList.length; i++) {
-			//User.aggregate([]);
+			User.aggregate([]);
 		}
 		
-		db.test.aggregate([
-    // Get just the docs that contain a shapes element where color is 'red'
-    {$match: {'shapes.color': 'red'}},
-    {$project: {
-        shapes: {$filter: {
-            input: '$shapes',
-            as: 'shape',
-            cond: {$eq: ['$$shape.color', 'red']}
-        }},
-        _id: 0
-    }}
-])
+		//db.test.aggregate([
+
 	});
 	
 	// ::: FRIEND HANDLING :::

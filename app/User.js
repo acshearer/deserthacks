@@ -9,8 +9,8 @@ var schema = mongoose.Schema({
 				name : String,
 			},
 			data : {
-				userTags : [{tag : String}],
-				friends : [{friend : String}],
+				userTags : [String],
+				friends : [String],
 				visibilityModifier : Boolean,
 				schedule : [{scheduleEvent: {ignore : Boolean, 
 											start_date : Date,
@@ -18,13 +18,6 @@ var schema = mongoose.Schema({
 											days_of_week: String,
 											start_time : Date,
 											end_time : Date}}],
-				events : [{
-					tags : [{tag: String}],
-					friendsVisible : [{friendId : String}],
-					time : [{time_started : Date, time_ended: Date}],
-					name : String,
-					description: String,
-				}]
 			}
 	}});
 

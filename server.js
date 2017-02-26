@@ -3,10 +3,14 @@ var mongoose = require('mongoose');
 var app = express();
 var passport = require('passport');
 
+mongoose.Promise = require('bluebird');
+
 // server handling
 var morgan = require('morgan');
-var session = require('express-session')
+var session = require('express-session');
+var bodyParser = require('body-parser');
 app.use(morgan('dev'));
+app.use(bodyParser.json());
 
 // allow X Http Requests
 app.use(function(req, res, next) {
@@ -31,13 +35,12 @@ app.use(passport.session());
 // static file handling
 app.use(express.static(__dirname + '/views'));
 
-// initialize the routes
-require('./app/routes.js')(app, passport);
-
-
 // initialize the database
 var configDB = require('./app/database.js');
 mongoose.connect(configDB.url);
+
+// initialize the routes
+require('./app/routes.js')(app, passport);
 
 // start the server
 var port_number = (process.env.PORT || 8080);

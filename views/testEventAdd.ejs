@@ -1,0 +1,41 @@
+<html>
+	<head>
+<script>
+// Create the XHR object.
+function createCORSRequest(method, url) {
+	var xhr = new XMLHttpRequest();
+	
+	if ("withCredentials" in xhr) {
+		xhr.open(method, url, true);
+		
+	} else if (typeof XDomainRequest != "undefined") {
+		xhr = new XDomainRequest();
+		xhr.open(method, url);
+		
+	} else {
+		xhr = null;
+	}
+	
+	return xhr;
+}
+
+var date1 = new Date().toJSON();
+var date2 = new Date().toJSON();
+
+var jsonObject = {
+	tags : [{tag: "@@@@@@"}],
+	friends : [{friend : "@@@@"}],
+	time_started : date1,
+	time_ended : date2,
+	name : "Fuck do i know",
+	description : "What the fuck",
+};
+
+var xhr = createCORSRequest("GET", "http://localhost:8080/");
+xhr.open("POST", "/createevent");
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.send(JSON.stringify(jsonObject));
+	
+		</script>
+	</head>
+</html>
