@@ -119,6 +119,7 @@ module.exports = function(app, passport){
                 var friend = req.body.friend;
                 var user = req.user;
                 user.user.data.friends.push(friend);
+                user.save();
         });
 
         app.post('/removefriend', function(req, res) {
