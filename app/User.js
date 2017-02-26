@@ -9,6 +9,7 @@ var schema = mongoose.Schema({
                         name : String,
                 },
                 data : {
+                        alexaUserId: String,
                         userTags : [String],
                         friends : [String],
                         visibilityModifier : Number,
