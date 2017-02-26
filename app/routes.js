@@ -101,7 +101,7 @@ module.exports = function(app, passport){
 											'type' : 'SSML', 
 											'ssml' : '<speak> Hello you are a little bitch </speak>'
 										},
-									};
+				}};
 				res.end(JSON.stringify(responseJSON));
         });
 
