@@ -1,6 +1,7 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var app = express();
+var passport = require('passport');
 
 // server handling
 var morgan = require('morgan');
@@ -21,23 +22,24 @@ app.use(function(req, res, next) {
 	}
 });
 
+// initialize passport
+require('./app/passport.js')(passport);
+app.use(session({secret: 'secret'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // static file handling
 app.use(express.static(__dirname + '/views'));
-app.set('view engine', 'ejs')
 
 // initialize the routes
-require('./app/routes.js')(app);
+require('./app/routes.js')(app, passport);
 
 
 // initialize the database
-mongoose.Promise = require('bluebird');
 var configDB = require('./app/database.js');
 mongoose.connect(configDB.url);
 
-//assert.equal(query.exec().constructor, require('bluebird'));
-
-
 // start the server
-var port_number = (process.env.PORT || 8550);
+var port_number = (process.env.PORT || 8080);
 app.listen(port_number);
 console.log('Server is running on ' + port_number + '...');
