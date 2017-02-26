@@ -91,7 +91,7 @@ module.exports = function(app, passport){
 				res.send(JSON.stringify(docs));
 			});
         });
-        app.get('/findeventall', isLoggedIn, function(req, res) {
+        app.get('/findeventall', function(req, res) {
                 var user = req.user;
 
                 var result = {};
@@ -124,11 +124,11 @@ module.exports = function(app, passport){
 
         });
 
-		app.post('/findAllUsers', function(req, res) {
-			User.find({}, function(err, docs) {
-				res.send(JSON.stringify(docs));
-			});
-		});
+        app.post('/findAllUsers', function(req, res) {
+                User.find({}, function(err, docs) {
+                        res.send(JSON.stringify(docs));
+                });
+        });
 		
         app.post('/friends', isLoggedIn, function(req, res) {
                 var friends = req.user.user.data.friends;
