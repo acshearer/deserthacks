@@ -144,7 +144,7 @@ module.exports = function(app, passport){
 			var schedule = {};
 		});
 		
-		app.post('/findFreeFriends', fuction(req, res) {
+		app.post('/findFreeFriends', function(req, res) {
 			var user = req.user;
 			
 		});
@@ -175,16 +175,16 @@ module.exports = function(app, passport){
         });
 }
 
-function getDocumentFromId(id){
-	User.findOne({'user.google.id' : id }, function(err, docs) {
-		if (err)
-			return {};
-		return docs;
-	});
-}
+	function getDocumentFromId(id){
+		User.findOne({'user.google.id' : id }, function(err, docs) {
+			if (err)
+				return {};
+			return docs;
+		});
+	}
 
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
+	// route middleware to make sure a user is logged in
+	function isLoggedIn(req, res, next) {
 
 		// if user is authenticated in the session, carry on
 		if (req.isAuthenticated())
