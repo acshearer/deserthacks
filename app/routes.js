@@ -46,6 +46,13 @@ module.exports = function(app, passport){
 
         });
 
+		app.post('/addUserToEvent', function(req, res) {
+			var eventName = req.body.eventAdd;
+			Event.find({'events.name' : eventAdd}, function(err, docs) {
+				
+			});
+		});
+		
         app.get('/testAddEvent', function(req, res) {
                 res.render('testEventAdd.ejs');
         });
@@ -143,6 +150,7 @@ module.exports = function(app, passport){
 
         app.post('/addfriend', function(req, res) {
                 var friend = req.body.friend;
+				console.log(req.body);
                 var user = req.user;
                 user.user.data.friends.push(friend);
                 user.save();

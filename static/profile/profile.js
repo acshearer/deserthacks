@@ -25,6 +25,23 @@ function getAllEventsFromServer() {
 	});
 }
 
+function createCORSRequest(method, url) {
+	var xhr = new XMLHttpRequest();
+	
+	if ("withCredentials" in xhr) {
+		xhr.open(method, url, true);
+		
+	} else if (typeof XDomainRequest != "undefined") {
+		xhr = new XDomainRequest();
+		xhr.open(method, url);
+		
+	} else {
+		xhr = null;
+	}
+	
+	return xhr;
+}
+
 function pushFriendsToBar(res) {
 	res = JSON.parse(res);
 	
@@ -41,17 +58,15 @@ function pushFriendsToBar(res) {
 		innerLink.setAttribute('class', 'folder');
 		innerLink.setAttribute('href', '#' + currFriend);
 		innerLink.setAttribute('currFriend', currFriend.user.google.id);
-		
+				
 		enclosingList.addEventListener('click', function(friend) {
 			return function() {
-				$.ajax({
-					type: "POST",
-					url : "/addFriend",
-					data : JSON.stringify({"friend" : friend}),
-					success: function(res) {
-						console.log("successful add of "  + friend);
-					}
-				});
+				console.log(JSON.stringify({'friend' : friend}));
+				
+				var xhr = createCORSRequest("GET", "http://localhost:8080/");
+				xhr.open("POST", "/addFriend");
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify({'friend' : friend}));
 			};
 		}(innerLink.getAttribute('currFriend')));
 		
@@ -74,6 +89,20 @@ function pushEventsToHTML(res) {
 		var currDiv = document.createElement('div');
 		currDiv.className = 'card eventElement well';
 		currDiv.innerHTML = currEvent;
+		
+		
+		currDiv.addEventListener('click', function(name) {
+			return function(){
+				$.ajax({
+					type: "POST",
+					url : "/addUserToEvent",
+					data : JSON.stringify({"eventAdd" : name}),
+					success: function(res) {
+						console.log("successful event add of "  + friend);
+					}
+				});
+		}(currEvent.name);
+		});
 		
 		container.appendChild(currDiv);
 		}
