@@ -88,6 +88,7 @@ module.exports = function(app, passport){
 			Event.find({}, function(err, docs) {
 				res.send(JSON.stringify(docs));
 			});
+        });
         app.get('/findeventall', isLoggedIn, function(req, res) {
                 var user = req.user;
 
