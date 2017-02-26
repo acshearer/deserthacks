@@ -90,7 +90,7 @@ function pushEventsToHTML(res) {
 		currDiv.className = 'card eventElement well';
 		currDiv.innerHTML = currEvent;
 		
-		
+		/**
 		currDiv.addEventListener('click', function(name) {
 			return function(){
 				$.ajax({
@@ -103,6 +103,7 @@ function pushEventsToHTML(res) {
 				});
 		}(currEvent.name);
 		});
+		**/
 		
 		container.appendChild(currDiv);
 		}
