@@ -5,6 +5,8 @@ var escapeStringRegexp = require('escape-string-regexp');
 var ICS = require('../app/icsparser.js');
 var alexaVerifier = require('alexa-verifier');
 
+var userPins = {};
+
 module.exports = function(app, passport){
         app.get('/test', function(req, res) {
                 res.send("ok");
@@ -220,19 +222,30 @@ module.exports = function(app, passport){
 
         });
 
+        app.get('/alexapin', isLoggedIn, function(req, res) {
+                var user = req.user;
+                var pin = Math.floor(Math.random() * 9000) + 1000;
+                userPins[pin] = user.user.google.id;
+                req.setHeader('Content-Type', 'text/plain');
+                req.send(pin.toString());
+        });
+
 
         // ::: ALEXA SHIT :::
         
 
         app.post('/alexa', function(req, res) {
                 var body = req.body;
+                var user = req.user;
                 var intent = body.request.intent.name;
 
                 var response = "";
 
                 switch(intent) {
                         case "FreeFriends": {
-                                var freeFriends = findFreeFriends(req.user);
+                                if (!user) break;
+
+                                var freeFriends = findFreeFriends(user);
                                 var names = freeFriends.map(friendId => {
                                         const friendDoc = getDocumentFromId(friendId);
                                         return friendDoc.user.google.name;
@@ -249,6 +262,27 @@ module.exports = function(app, passport){
                                         response += "They are " + namelist + ".";
 
                                 }
+                                break;
+                        }
+                        case "LogIn": {
+                                var pin = parseInt(body.request.intent.slots.pin.value, 10);
+                                var alexaUserId = body.session.user.userId;
+                                if (pin >= 1000 && pin < 10000) {
+                                        if (pin in userPins) {
+                                                var id = userPins[pin];
+                                                var userDoc = getDocumentFromId(id);
+                                                if (Object.keys(userDoc).length === 0) {
+                                                        response = "That user doesn't exist anymore.";
+                                                } else {
+                                                        userDoc.user.data.alexaUserId = alexaUserId;
+                                                        userDoc.save();
+                                                        response = "Succesfully logged in as " + userDoc.user.google.name + ".";
+                                                }
+                                        } else {
+                                                response = "Invalid pin.";
+                                        }
+                                }
+
                         }
                 }
 
