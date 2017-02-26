@@ -23,6 +23,11 @@
 	border-color: gray;
 }
 
+#addEvent {
+	margin-top: 30px;
+	margin-bottom: 40px;
+}
+
 #addButton {
 	position: fixed;
 	left: 160px;

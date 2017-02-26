@@ -2,6 +2,35 @@ window.onload = function() {
 	console.log("LOL");
 	getAllEventsFromServer();
 	populateFriendBar();
+	
+	var add_button = document.getElementById("add_event");
+	add_button.addEventListener('click', function(req, res){
+		var name_input = document.getElementById("name");
+		var description_input = document.getElementById("description");
+		var time_input = document.getElementById("time");
+		
+		var date1 = new Date().toJSON();
+		var date2 = new Date();
+		date2.setMinutes(date2.getMinutes() + parseInt(time_input));
+				
+		var jsonObject = {
+			tags : [],
+			friendsVisible : [],
+			time_started : date1,
+			time_ended : date2.toJSON(),
+			name : name_input.value,
+			description : description_input.value,
+		};
+
+		console.log(JSON.stringify(jsonObject));
+		
+		var xhr = createCORSRequest("GET", "http://localhost:8080/");
+		xhr.open("POST", "/createevent");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.send(JSON.stringify(jsonObject));
+		
+		location.reload();
+	});
 }
 
 function populateFriendBar() {
@@ -9,7 +38,6 @@ function populateFriendBar() {
 		type: "POST",
 		url : "/findAllUsers",
 		success: function(res) {
-			console.log(res);
 			pushFriendsToBar(res);
 		}
 	});
@@ -48,9 +76,7 @@ function pushFriendsToBar(res) {
 	var listWrapper = document.getElementById('sidebar-list');
 	for (var i = 0 ; i < res.length; i++){
 		var currFriend = res[i];
-		
-		console.log(currFriend);
-		
+				
 		var enclosingList = document.createElement('li');
 		var innerLink = document.createElement('a');
 		
@@ -61,9 +87,8 @@ function pushFriendsToBar(res) {
 				
 		enclosingList.addEventListener('click', function(friend) {
 			return function() {
-				console.log(JSON.stringify({'friend' : friend}));
 				
-				var xhr = createCORSRequest("GET", "http://localhost:8080/");
+				var xhr = createCORSRequest("GET");
 				xhr.open("POST", "/addFriend");
 				xhr.setRequestHeader("Content-Type", "application/json");
 				xhr.send(JSON.stringify({'friend' : friend}));
@@ -85,25 +110,27 @@ function pushEventsToHTML(res) {
 		var container = document.getElementById("column" + index);
 		
 		var currEvent = JSON.stringify(res[i]);
-		
+		var evObj = JSON.parse(currEvent);
+				
 		var currDiv = document.createElement('div');
-		currDiv.className = 'card eventElement well';
-		currDiv.innerHTML = currEvent;
 		
-		/**
-		currDiv.addEventListener('click', function(name) {
-			return function(){
-				$.ajax({
-					type: "POST",
-					url : "/addUserToEvent",
-					data : JSON.stringify({"eventAdd" : name}),
-					success: function(res) {
-						console.log("successful event add of "  + friend);
-					}
-				});
-		}(currEvent.name);
-		});
-		**/
+		var p1 = document.createElement('p');
+		var p2 = document.createElement('p');
+		var p3 = document.createElement('p');
+		var p4 = document.createElement('p');
+		
+		p1.innerHTML = evObj.events.name;
+		p2.innerHTML = evObj.events.description;
+		p3.innerHTML = evObj.events.time_started;
+		p4.innerHTML = evObj.events.time_ended;
+		
+		currDiv.className = 'card eventElement well';
+		//currDiv.innerHTML = currEvent;
+		
+		currDiv.appendChild(p1);
+		currDiv.appendChild(p2);
+		currDiv.appendChild(p3);
+		currDiv.appendChild(p4);
 		
 		container.appendChild(currDiv);
 		}
