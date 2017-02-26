@@ -13,7 +13,7 @@ module.exports = function(app, passport){
         // ::: VIEWS :::
 
         app.get('/profile', function(req, res) {
-                res.render('profile.ejs');
+                res.render('profile.ejs', {user : req.user});
         });
 
         app.get('/login', function(req, res) {
