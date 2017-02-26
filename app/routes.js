@@ -65,7 +65,7 @@ module.exports = function(app, passport){
                 });
         });
 
-        app.post('/searcheventbytags', function(req, res) {
+        app.post('/findeventbytags', function(req, res) {
                 var tagList = req.body.tags;
                 var eventList = [];
 
@@ -84,10 +84,10 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findEventAll', function(req, res) {
+        app.post('/findeventall', function(req, res) {
         });
 
-        app.post('/findEventByFriend', function(req, res) {
+        app.post('/findeventbyfriend', function(req, res) {
 
         });
 
@@ -133,11 +133,8 @@ module.exports = function(app, passport){
                 var idToCheck = req.body.friendId;
                 var documentToCheck = getDocumentFromId(idToCheck);
 
-
-
                 var now = new Date();
                 var free = isFree(documentToCheck, now);
-
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({free: free}));
