@@ -227,8 +227,8 @@ module.exports = function(app, passport){
 
                 switch(intent) {
                         case "FreeFriends": {
-                                let freeFriends = findFreeFriends(req.user);
-                                let names = freeFriends.map(friendId => {
+                                var freeFriends = findFreeFriends(req.user);
+                                var names = freeFriends.map(friendId => {
                                         const friendDoc = getDocumentFromId(friendId);
                                         return friendDoc.user.google.name;
                                 });
