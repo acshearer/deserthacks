@@ -8,6 +8,12 @@ module.exports = function(app, passport){
                 res.send("ok");
         });
 
+        // ::: VIEWS :::
+
+        app.get('/profile', function(req, res) {
+
+        });
+
         app.get('/login', function(req, res) {
                 res.render('login.ejs');
         });
@@ -16,6 +22,8 @@ module.exports = function(app, passport){
                 req.logout();
                 res.redirect('/login');
         });
+
+        // ::: GOOGLE AUTHENTICATION ::: 
 
         // profile gets us their basic information including their name
         // email gets their emails
@@ -28,7 +36,7 @@ module.exports = function(app, passport){
                         failureRedirect : '/login'
                 }));
 
-        // ::: USER CREATED EVENTS :::
+        // ::: USER-CREATED EVENTS HANDLING :::
 
         app.get('/testAddEvent', function(req, res) {
                 res.render('testEventAdd.ejs');
@@ -50,46 +58,40 @@ module.exports = function(app, passport){
                         console.log(err);
                 });
         });
-        app.get('/test', function(req, res) {
-                res.send("ok");
-        });
 
-        app.post('/findEventByTag', function(req, res) {
+        app.post('/searcheventbytags', function(req, res) {
                 var tagList = req.body.tags;
                 var eventList = [];
 
                 for (var i = 0 ; i < tagList.length; i++) {
-                        var currTag = eventList[i];
-                        //User.aggregate([{$match: { 'user.data.events.tags' }}]);
+                        var currTag = tagList[i];
+                        Event.find({'events.tags.tag' : currTag}, function(err, docs){
+                                for (var j = 0 ; j < docs.length; j++){
+                                        eventList.push(docs[j]);
+                                        console.log(eventList);
+                                }
+
+                                if (i == tagList.length - 1)
+                                        res.end(JSON.stringify(eventList));
+                        });
                 }
+
         });
 
         app.post('/findEventAll', function(req, res) {
-
+                var eventList = [];
+                Event.find({}, function(err, docs) {
+                        eventList = docs;
+                        console.log(docs);
+                        res.end(JSON.stringify(eventList));
+                });
         });
 
         app.post('/findEventByFriend', function(req, res) {
-                var friendList = req.body.friends;
-                var eventList = [];
-
-                for (var i = 0 ; i < friendList.length; i++) {
-                        User.aggregate([]);
-                }
-
-                //db.test.aggregate([
 
         });
 
         // ::: FRIEND HANDLING :::
-
-        app.get('/friendprofile', isLoggedIn, function(req, res) {
-
-        });
-
-        app.get('/addfriend', isLoggedIn, function(req, res) {
-                req.render('addfriend.ejs');
-
-        });
 
         app.get('/searchusers', /* isLoggedIn, */ function(req, res) {
                 res.render('searchusers.ejs', {user: req.user});
@@ -108,48 +110,21 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/addfriend', isLoggedIn, function(req, res) {
+        app.get('/getFriendByName', function(req, res){
 
         });
 
-        app.get('/friends', isLoggedIn, function(req, res) {
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(req.user.user.data.friends));
-        });
 
-        app.get('/login', function(req, res) {
-                res.render('login.ejs');
-        });
-
-        app.get('/logout', function(req, res) {
-                req.logout();
-                res.redirect('/login');
-        });
-
-        // profile gets us their basic information including their name
-        // email gets their emails
-        app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
-
-        // the callback after google has authenticated the user
-        app.get('/auth/google/callback',
-                passport.authenticate('google', {
-                        successRedirect : '/test',
-                        failureRedirect : '/login'
-                }));
-
-        app.get('/createevent', isLoggedIn, function(req, res) {
-                res.render('addevent.ejs', {user: req.user});
-        });
-
-        app.post('/createevent', isLoggedIn, function(req, res) {
+        app.get('/addfriend', isLoggedIn, function(req, res) {
+                req.render('addfriend.ejs');
 
         });
 
-        app.get('/contactfriend', function(req, res) {
+        app.post('/addfriend', function(req, res) {
 
         });
 
-        app.get('/findevent', function(req, res) {
+        app.get('/removefriend', function(req, res) {
 
         });
 
@@ -157,13 +132,8 @@ module.exports = function(app, passport){
 
         });
 
-        app.get('/addfriend', function(req, res) {
 
-        });
-
-        app.get('/removefriend', function(req, res) {
-
-        });
+        // ::: SCHEDULE(RECURRING) STUFF ::::
 
         app.get('/addschedule', function(req, res) {
 
@@ -173,9 +143,7 @@ module.exports = function(app, passport){
 
         });
 
-        app.get('/addevent', function(req, res) {
-
-        });
+        // ::: EXTRANEOUS METHODS :::
 
         app.get('/changeuservisibility', function(req, res) {
 
@@ -193,3 +161,4 @@ function isLoggedIn(req, res, next) {
         // if they aren't redirect them to the home page
         res.redirect('/login');
 }
+
