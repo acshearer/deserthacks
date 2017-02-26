@@ -309,6 +309,14 @@ module.exports = function(app, passport){
                                         respone = "Invalid pin.";
                                 }
 
+                                break;
+                        }
+                        case "GetEvents": {
+                                Events.aggregate({ $sample: {size: 1} }, (err, eventDocs) {
+                                        console.log(eventDocs);
+                                });
+
+                                break;
                         }
                 }
 
