@@ -84,10 +84,17 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findeventall', function(req, res) {
+        app.get('/findeventall', isLoggedIn, function(req, res) {
+                var user = req.user;
+
+                var result = {};
+                Event.find({ 'events.friendsVisible.friend': user.user.google.id }, (err, docs) => {
+                        docs.forEach(eventDoc => {
+                        });
+                });
         });
 
-        app.post('/findeventbyfriend', function(req, res) {
+        app.get('/findeventbyfriend', function(req, res) {
 
         });
 
