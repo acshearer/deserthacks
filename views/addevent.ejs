@@ -1,0 +1,118 @@
+<%- include('header.ejs', {user: user}) %>
+
+<script>
+// Create the XHR object.
+function createCORSRequest(method, url) {
+  var xhr = new XMLHttpRequest();
+
+  if ("withCredentials" in xhr) {
+    xhr.open(method, url, true);
+
+  } else if (typeof XDomainRequest != "undefined") {
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+
+  } else {
+    xhr = null;
+  }
+
+  return xhr;
+}
+
+var date1 = new Date().toJSON();
+var date2 = new Date().toJSON();
+
+document.addEventListener("DOMContentLoaded", () => {
+  var submit = document.getElementById("submit");
+  var eventname = document.getElementById("eventname");
+  var tagsfield = document.getElementById("tags");
+  var friends = document.getElementById("friends");
+  var eventdesc = document.getElementById("eventdesc");
+
+  submit.addEventListener('click', e => {
+    var name = eventname.value;
+    var tags = tagsfield.value.split(" ").map(t => {tag: t});
+    var desc = eventdesc.value;
+
+
+    var jsonObject = {
+      userTags: [tags],
+      friends: [],
+      time: {time_started: date1, time_ended: date2},
+      name: name,
+      description: desc,
+    };
+
+    var xhr = createCORSRequest("POST", "/createevent");
+    if (xhr) {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.send(JSON.stringify(jsonObject));
+    } else {
+      alert("NO XHR!");
+    }
+  });
+});
+
+</script>
+
+<h3>Create an event</h3>
+<table class="twocolmidcenter" id="createeventform">
+  <tr>
+    <td>
+      Enter the event name:
+    </td>
+    <td>
+      <input type="text" id="eventname" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Enter a description for the event:
+    </td>
+    <td>
+      <textarea id="eventdesc"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Enter your tags, separated by a space:
+    </td>
+    <td>
+      <input type="text" id="tags" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Select friends to share this event with: 
+    </td>
+    <td>
+      TODO
+    </td>
+  </tr>
+  <tr>
+    <td>
+      When does the event start? 
+    </td>
+    <td>
+      TODO
+    </td>
+  </tr>
+  <tr>
+    <td>
+      When does the event end? 
+    </td>
+    <td>
+      TODO
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <button id="submit">Create</button>
+    </td>
+    <td>
+    </td>
+  </tr>
+</table>
+
+<%- include('footer.ejs') %>
+
