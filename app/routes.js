@@ -84,25 +84,16 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findEventAll', requestVerifier, function(req, res) {
-				/**
-                var eventList = [];
-                Event.find({}, function(err, docs) {
-                        eventList = docs;
-                        console.log(docs);
-                        res.end(JSON.stringify(eventList));
-                });
-				**/
-				
-				var responseJSON = {'version' : '1.0', 'sessionAttributes' : {},
-									'response' : {
-										'shouldEndSession' : true,
-										'outputSpeech' : {
-											'type' : 'SSML', 
-											'ssml' : '<speak> Hello you are a little bitch </speak>'
-										},
-				}};
-				res.end(JSON.stringify(responseJSON));
+        app.post('/findEventAll', function(req, res) {
+		res.json({
+			"version": "1.0",
+      			"response": {
+			"shouldEndSession": true,
+			"outputSpeech": {
+			  "type": "SSML",
+			  "ssml": "<speak>Test</speak>"
+			}}
+		});
         });
 
         app.post('/findEventByFriend', function(req, res) {
@@ -167,28 +158,14 @@ module.exports = function(app, passport){
         });
 }
 
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
+	// route middleware to make sure a user is logged in
+	function isLoggedIn(req, res, next) {
 
-        // if user is authenticated in the session, carry on
-        if (req.isAuthenticated())
-                return next();
+		// if user is authenticated in the session, carry on
+		if (req.isAuthenticated())
+			return next();
 
-        // if they aren't redirect them to the home page
-        res.redirect('/login');
-}
-
-function requestVerifier(req, res, next) {
-    alexaVerifier(
-        req.headers.signaturecertchainurl,
-        req.headers.signature,
-        req.rawBody,
-        function verificationCallback(err) {
-            if (err) {
-                res.status(401).json({ message: 'Verification Failure', error: err });
-            } else {
-                next();
-            }
-        }
-    );
+		// if they aren't redirect them to the home page
+		res.redirect('/login');
+	}
 }
