@@ -34,7 +34,7 @@ module.exports = function(app, passport){
         // the callback after google has authenticated the user
         app.get('/auth/google/callback',
                 passport.authenticate('google', {
-                        successRedirect : '/test',
+                        successRedirect : '/profile',
                         failureRedirect : '/login'
                 }));
 
@@ -85,6 +85,9 @@ module.exports = function(app, passport){
         });
 
         app.post('/findeventall', function(req, res) {
+			Event.find({}, function(err, docs) {
+				res.send(JSON.stringify(docs));
+			});
         });
 
         app.post('/findeventbyfriend', function(req, res) {

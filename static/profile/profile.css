@@ -29,12 +29,10 @@
 	top: 65px;
 }
 
-#main-container {
-	left: 200px;
-	top: 52px;
-	width: 100%;
-	height: 100%;
+.eventElement {
+	width: 300px;
 }
+
 
 #main_container {
 	margin-left: 200px;
