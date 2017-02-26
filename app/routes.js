@@ -117,6 +117,12 @@ module.exports = function(app, passport){
 
         });
 
+        app.post('/friends', isLoggedIn, function(req, res) {
+                var friends = req.user.user.data.friends;
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(friends));
+        });
+
         app.post('/searchFriendById', function(req, res) {
                 var idToCheck = req.body.friendId;
                 res.end(JSON.stringify(getDocumentFromId(idToCheck)));
