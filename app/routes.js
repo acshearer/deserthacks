@@ -85,15 +85,6 @@ module.exports = function(app, passport){
         });
 
         app.post('/findEventAll', function(req, res) {
-                res.json({
-                        "version": "1.0",
-                        "response": {
-                                "shouldEndSession": true,
-                                "outputSpeech": {
-                                        "type": "SSML",
-                                        "ssml": "<speak>Test</speak>"
-                                }}
-                });
         });
 
         app.post('/findEventByFriend', function(req, res) {
@@ -102,7 +93,7 @@ module.exports = function(app, passport){
 
         // ::: FRIEND HANDLING :::
 
-        app.get('/searchusers', /* isLoggedIn, */ function(req, res) {
+        app.get('/searchusers', isLoggedIn, function(req, res) {
                 res.render('searchusers.ejs', {user: req.user});
         });
 
@@ -172,6 +163,22 @@ module.exports = function(app, passport){
 
         app.get('/changeuservisibility', function(req, res) {
 
+        });
+
+
+        // ::: ALEXA SHIT :::
+        
+
+        app.post('/alexa', function(req, res) {
+                res.json({
+                        "version": "1.0",
+                        "response": {
+                                "shouldEndSession": true,
+                                "outputSpeech": {
+                                        "type": "SSML",
+                                        "ssml": "<speak>Test</speak>"
+                                }}
+                });
         });
 }
 
