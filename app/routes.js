@@ -46,6 +46,13 @@ module.exports = function(app, passport){
 
         });
 
+		app.post('/addUserToEvent', function(req, res) {
+			var eventName = req.body.eventAdd;
+			Event.find({'events.name' : eventAdd}, function(err, docs) {
+				
+			});
+		});
+		
         app.get('/testAddEvent', function(req, res) {
                 res.render('testEventAdd.ejs');
         });
@@ -143,6 +150,7 @@ module.exports = function(app, passport){
 
         app.post('/addfriend', function(req, res) {
                 var friend = req.body.friend;
+				console.log(req.body);
                 var user = req.user;
                 user.user.data.friends.push(friend);
                 user.save();
@@ -251,24 +259,23 @@ module.exports = function(app, passport){
                 switch(intent) {
                         case "FreeFriends": {
                                 User.findOne({ 'user.data.alexaUserId': alexaUserId }, (err, userDoc) => {
-                                        console.log(userDoc);
                                         if (userDoc) {
                                                 findFreeFriends(userDoc, freeFriends => {
-                                                        var names = freeFriends.map(friendDoc => {
-                                                                friendDoc.user.google.name;
-                                                        });
+                                                        var names = freeFriends.map(friendDoc => friendDoc.user.google.name);
                                                         nameList = englishConcat(names);
-
                                                         if (names.length == 0) {
                                                                 response = "You have no free friends right now. Perhaps you should make some?";
                                                         } else if (names.length == 1) {
                                                                 response = "Your only free friend right now is " + names[0];
                                                         } else {
                                                                 response = "You have " + names.length + " free friends right now. ";
-                                                                response += "They are " + namelist + ".";
+                                                                response += "They are " + nameList + ".";
 
                                                         }
+
+					                res.json(makeAlexaResponse(response));
                                                 });
+						return;
 
                                         } else {
                                                 response = "You are not logged in. [insert instructions to login here]"
@@ -319,7 +326,7 @@ function englishConcat(list) {
         } else if (list.length == 2) {
                 return list[1] + " and " + list[2];
         } else {
-                return list.slice(0, -1).join(", ") + ", or " + list[list.length-1];
+                return list.slice(0, -1).join(", ") + ", and " + list[list.length-1];
         }
 }
 
@@ -350,6 +357,7 @@ function isFree(userDoc, time) {
 
         });
 
+        return free;
 }
 
 function findFreeFriends(userDoc, callback) {
@@ -362,7 +370,7 @@ function findFreeFriends(userDoc, callback) {
         friends.filter(friendId => {
                 const friendDoc = getDocumentFromId(friendId, (friendDoc) => {
                         if (isFree(friendDoc, now)) {
-                                freeFriends.add(friendDoc);
+                                freeFriends.push(friendDoc);
                         }
                         count++;
                         if (count >= friends.length) {
