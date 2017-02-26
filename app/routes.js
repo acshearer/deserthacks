@@ -81,11 +81,13 @@ module.exports = function(app, passport){
 
         // ::: FRIEND HANDLING :::
 
-        app.get('/friendprofile', function(req, res) {
+        app.get('/friendprofile', isLoggedIn, function(req, res) {
 
         });
 
-        app.get('/addfriend', function(req, res) {
+        app.get('/addfriend', isLoggedIn, function(req, res) {
+
+        });
 
         });
 
