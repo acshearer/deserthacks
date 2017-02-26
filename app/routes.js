@@ -5,6 +5,8 @@ var escapeStringRegexp = require('escape-string-regexp');
 var ICS = require('../app/icsparser.js');
 var alexaVerifier = require('alexa-verifier');
 
+var userPins = {};
+
 module.exports = function(app, passport){
         app.get('/test', function(req, res) {
                 res.send("ok");
@@ -227,48 +229,77 @@ module.exports = function(app, passport){
 
         });
 
+        app.get('/alexapin', isLoggedIn, function(req, res) {
+                var user = req.user;
+                var pin = Math.floor(Math.random() * 9000) + 1000;
+                userPins[pin] = user.user.google.id;
+                res.setHeader('Content-Type', 'text/plain');
+                res.send(pin.toString());
+        });
+
 
         // ::: ALEXA SHIT :::
         
 
         app.post('/alexa', function(req, res) {
                 var body = req.body;
+                var user = req.user;
                 var intent = body.request.intent.name;
 
                 var response = "";
 
                 switch(intent) {
                         case "FreeFriends": {
-                                var freeFriends = findFreeFriends(req.user);
-                                var names = freeFriends.map(friendId => {
-                                        const friendDoc = getDocumentFromId(friendId);
-                                        return friendDoc.user.google.name;
+                                if (!user) break;
+
+                                findFreeFriends(user, freeFriends => {
+                                        var names = freeFriends.map(friendDoc => {
+                                                friendDoc.user.google.name;
+                                        });
+                                        nameList = englishConcat(names);
+
+                                        if (names.length == 0) {
+                                                response = "You have no free friends right now. Perhaps you should make some?";
+                                        } else if (names.length == 1) {
+                                                response = "Your only free friend right now is " + names[0];
+                                        } else {
+                                                response = "You have " + names.length + " free friends right now. ";
+                                                response += "They are " + namelist + ".";
+
+                                        }
                                 });
+                                break;
+                        }
+                        case "LogIn": {
+                                var pin = parseInt(body.request.intent.slots.pin.value, 10);
+                                var alexaUserId = body.session.user.userId;
+                                if (pin >= 1000 && pin < 10000) {
+                                        if (pin in userPins) {
+                                                var id = userPins[pin];
+                                                getDocumentFromId(id, userDoc => {
+                                                        if (!userDoc || Object.keys(userDoc).length === 0) {
+                                                                response = "That user doesn't exist anymore.";
+                                                        } else {
+                                                                userDoc.user.data.alexaUserId = alexaUserId;
+                                                                userDoc.save();
+                                                                response = "Succesfully logged in as " + userDoc.user.google.name + ".";
+                                                        }
 
-                                nameList = englishConcat(names);
-
-                                if (names.length == 0) {
-                                        response = "You have no free friends right now. Perhaps you should make some?";
-                                } else if (names.length == 1) {
-                                        response = "Your only free friend right now is " + names[0];
+                                                        res.json(makeAlexaResponse(response));
+                                                });
+                                                return;
+                                        } else {
+                                                response = "Invalid pin.";
+                                        }
                                 } else {
-                                        response = "You have " + names.length + " free friends right now. ";
-                                        response += "They are " + namelist + ".";
-
+                                        respone = "Invalid pin.";
                                 }
+
                         }
                 }
 
 
-                res.json({
-                        "version": "1.0",
-                        "response": {
-                                "shouldEndSession": true,
-                                "outputSpeech": {
-                                        "type": "SSML",
-                                        "ssml": "<speak>" + response + "</speak>"
-                                }}
-                });
+                res.json(makeAlexaResponse(response));
         });
 }	
 
@@ -313,23 +344,39 @@ function isFree(userDoc, time) {
 
 }
 
-function findFreeFriends(userDoc) {
+function findFreeFriends(userDoc, callback) {
         var friends = userDoc.user.data.friends;
         var now = new Date();
 
-        var freeFriends = friends.filter(friendId => {
-                const friendDoc = getDocumentFromId(friendId);
-                return isFree(friendDoc, now);
-        });
+        var freeFriends = [];
 
-        return freeFriends;
+        var count = 0;
+        friends.filter(friendId => {
+                const friendDoc = getDocumentFromId(friendId, (friendDoc) => {
+                        if (isFree(friendDoc, now)) {
+                                freeFriends.add(friendDoc);
+                        }
+                        count++;
+                        if (count >= friends.length) {
+                                callback(freeFriends);
+                        }
+                });
+        });
 }
 
-function getDocumentFromId(id){
+function makeAlexaResponse(responseText) {
+        return ({"version": "1.0",
+         "response": {"shouldEndSession": true,
+                      "outputSpeech": {
+                                "type": "SSML",
+                                "ssml": "<speak>" + responseText + "</speak>"}}});
+}
+
+function getDocumentFromId(id, callback) {
         User.findOne({'user.google.id' : id }, function(err, docs) {
                 if (err)
-                        return {};
-                return docs;
+                        callback({});
+                return callback(docs);
         });
 }
 
