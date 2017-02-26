@@ -54,7 +54,7 @@ module.exports = function(app, passport){
                 var newEvent = new Event();
 
                 newEvent.events.tags = events.tags;
-                newEvent.events.friends = events.friends;
+                newEvent.events.friendsVisible = events.friendsVisible;
                 newEvent.events.time_started = events.time_started;
                 newEvent.events.time_ended = events.time_ended;
                 newEvent.events.name = events.name;

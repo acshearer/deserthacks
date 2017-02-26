@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var schema = mongoose.Schema({
 	events : {
 		tags : [{tag: String}],
-		friendsVisible : [{tag: String}],
+		friendsVisible : [{friend: String}],
 		time_started : Date,
 		time_ended : Date,
 		name : String,
