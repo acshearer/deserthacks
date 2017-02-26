@@ -1,3 +1,3 @@
 module.exports = {
-	'url' : 'mongodb://root:password@ds161109.mlab.com:61109/locus2',
+	'url' : 'mongodb://root:password@ds161069.mlab.com:61069/deserthacks',
 };

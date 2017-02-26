@@ -8,9 +8,9 @@ var alexaVerifier = require('alexa-verifier');
 var userPins = {};
 
 module.exports = function(app, passport){
-        app.get('/test', function(req, res) {
-                res.send("ok");
-        });
+        app.get('/', function(req, res) {
+			res.render('index.ejs');
+		});
 
         // ::: VIEWS :::
 
@@ -19,7 +19,7 @@ module.exports = function(app, passport){
         });
 
         app.get('/login', function(req, res) {
-                res.render('login.ejs');
+                res.render('index.ejs');
         });
 
         app.get('/logout', function(req, res) {
