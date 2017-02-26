@@ -2,7 +2,7 @@ var Event = require('../app/Event.js');
 var User = require('../app/User.js');
 var bodyParser = require('body-parser');
 var escapeStringRegexp = require('escape-string-regexp');
-// var parseICS = require('../app/icsparser.js');
+var ICS = require('../app/icsparser.js');
 var alexaVerifier = require('alexa-verifier');
 
 module.exports = function(app, passport){
