@@ -11,7 +11,7 @@ var schema = mongoose.Schema({
 			data : {
 				userTags : [String],
 				friends : [String],
-				visibilityModifier : Boolean,
+				visibilityModifier : Number,
 				schedule : [{scheduleEvent: {ignore : Boolean, 
 											start_date : Date,
 											end_date : Date,
