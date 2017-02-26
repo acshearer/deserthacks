@@ -251,36 +251,43 @@ module.exports = function(app, passport){
 
         app.post('/alexa', function(req, res) {
                 var body = req.body;
-                var user = req.user;
                 var intent = body.request.intent.name;
+                var alexaUserId = body.session.user.userId;
 
                 var response = "";
 
                 switch(intent) {
                         case "FreeFriends": {
-                                if (!user) break;
+                                User.findOne({ 'user.data.alexaUserId': alexaUserId }, (err, userDoc) => {
+                                        console.log(userDoc);
+                                        if (userDoc) {
+                                                findFreeFriends(userDoc, freeFriends => {
+                                                        var names = freeFriends.map(friendDoc => {
+                                                                friendDoc.user.google.name;
+                                                        });
+                                                        nameList = englishConcat(names);
 
-                                findFreeFriends(user, freeFriends => {
-                                        var names = freeFriends.map(friendDoc => {
-                                                friendDoc.user.google.name;
-                                        });
-                                        nameList = englishConcat(names);
+                                                        if (names.length == 0) {
+                                                                response = "You have no free friends right now. Perhaps you should make some?";
+                                                        } else if (names.length == 1) {
+                                                                response = "Your only free friend right now is " + names[0];
+                                                        } else {
+                                                                response = "You have " + names.length + " free friends right now. ";
+                                                                response += "They are " + namelist + ".";
 
-                                        if (names.length == 0) {
-                                                response = "You have no free friends right now. Perhaps you should make some?";
-                                        } else if (names.length == 1) {
-                                                response = "Your only free friend right now is " + names[0];
+                                                        }
+                                                });
+
                                         } else {
-                                                response = "You have " + names.length + " free friends right now. ";
-                                                response += "They are " + namelist + ".";
-
+                                                response = "You are not logged in. [insert instructions to login here]"
                                         }
+                                        res.json(makeAlexaResponse(response));
                                 });
-                                break;
+
+                                return;
                         }
                         case "LogIn": {
                                 var pin = parseInt(body.request.intent.slots.pin.value, 10);
-                                var alexaUserId = body.session.user.userId;
                                 if (pin >= 1000 && pin < 10000) {
                                         if (pin in userPins) {
                                                 var id = userPins[pin];
@@ -306,8 +313,9 @@ module.exports = function(app, passport){
                         }
                 }
 
-
                 res.json(makeAlexaResponse(response));
+
+
         });
 }	
 
