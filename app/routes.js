@@ -221,7 +221,7 @@ module.exports = function(app, passport){
 
         app.post('/alexa', function(req, res) {
                 var body = req.body;
-                var intent = req.request.intent.name;
+                var intent = body.request.intent.name;
 
                 var response = "";
 
