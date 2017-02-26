@@ -281,6 +281,8 @@ module.exports = function(app, passport){
                                         } else {
                                                 response = "Invalid pin.";
                                         }
+                                } else {
+                                        respone = "Invalid pin.";
                                 }
 
                         }
