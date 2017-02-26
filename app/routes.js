@@ -2,7 +2,7 @@ var Event = require('../app/Event.js');
 var User = require('../app/User.js');
 var bodyParser = require('body-parser');
 var escapeStringRegexp = require('escape-string-regexp');
-// var parseICS = require('../app/icsparser.js');
+var ICS = require('../app/icsparser.js');
 var alexaVerifier = require('alexa-verifier');
 
 module.exports = function(app, passport){
@@ -65,7 +65,7 @@ module.exports = function(app, passport){
                 });
         });
 
-        app.post('/searcheventbytags', function(req, res) {
+        app.post('/findeventbytags', function(req, res) {
                 var tagList = req.body.tags;
                 var eventList = [];
 
@@ -84,10 +84,10 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findEventAll', function(req, res) {
+        app.post('/findeventall', function(req, res) {
         });
 
-        app.post('/findEventByFriend', function(req, res) {
+        app.post('/findeventbyfriend', function(req, res) {
 
         });
 
@@ -119,6 +119,7 @@ module.exports = function(app, passport){
                 var friend = req.body.friend;
                 var user = req.user;
                 user.user.data.friends.push(friend);
+                user.save();
         });
 
         app.post('/removefriend', function(req, res) {
@@ -132,12 +133,26 @@ module.exports = function(app, passport){
                 var idToCheck = req.body.friendId;
                 var documentToCheck = getDocumentFromId(idToCheck);
 
-                var schedule = {};
+                var now = new Date();
+                var free = isFree(documentToCheck, now);
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({free: free}));
         });
 
-        app.post('/findFreeFriends', function(req, res) {
+        app.get('/findFreeFriends', function(req, res) {
                 var user = req.user;
 
+                var friends = user.user.data.friends;
+                var now = new Date();
+
+                var freeFriends = friends.filter(friendId => {
+                        const friendDoc = getDocumentFromId(friendId);
+                        return isFree(friendDoc, now);
+                });
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({freeFriends: freeFriends}));
         });
 
         // ::: SCHEDULE(RECURRING) STUFF :::
@@ -147,21 +162,49 @@ module.exports = function(app, passport){
         });
 
         app.post('/addschedule', function(req, res) {
+                var user = req.user;
                 var ical = req.body.ical;
                 if (typeof ical === "string") {
-                        var parsed = require("../app/icsparser")(req.body.ical)
-                        console.log(parsed);
+                        var parsed = ICS.parseICS(req.body.ical)
+                        parsed.forEach(item => {
+                                user.user.data.schedule.push({
+                                        scheduleEvent: {
+                                                name: item.name,
+                                                location: item.location,
+                                                ignore: item.ignore,
+                                                start_date: item.start_date,
+                                                end_date: item.end_date,
+                                                days_of_week: item.days_of_week,
+                                                start_time: item.start_time,
+                                                end_time: item.end_time
+                                        }
+                                });
+
+                        });
+
+                        user.save();
+                        console.log(user.user.data.schedule);
                 }
 
         });
 
-        app.get('/removescheduleelement', function(req, res) {
+        app.post('/clearschedule', function(req, res) {
+                req.user.user.data.schedule = [];
+                req.user.save();
+        });
+
+        app.get('/schedule', function(req, res) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(req.user.user.data.schedule));
+        });
+
+        app.post('/removescheduleelement', function(req, res) {
 
         });
 
         // ::: EXTRANEOUS METHODS :::
 
-        app.get('/changeuservisibility', function(req, res) {
+        app.post('/changeuservisibility', function(req, res) {
 
         });
 
@@ -180,6 +223,35 @@ module.exports = function(app, passport){
                                 }}
                 });
         });
+}
+
+// userDoc is a user document
+// time is a Date object.
+function isFree(userDoc, time) {
+        const now = new Date();
+        const days = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+        var schedule = userDoc.user.data.schedule;
+
+        var day = time.getDay();
+
+        // This is the amount of seconds since midnight.
+        // Sorry for the stupid variable name
+        var secs = time.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())));
+
+        var free = !schedule.some(itemobj => {
+                var item = itemobj.scheduleEvent;
+                if (item.ignore) return true;
+
+                var days = item.days_of_week.split(" ").map(day => days[day]);
+
+                if (days.indexOf(dayNumber) > -1) {
+                        return secs >= item.start_time && secs <= item.end_time;
+                }
+
+                return false;
+
+        });
+
 }
 
 function getDocumentFromId(id){

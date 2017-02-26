@@ -63,6 +63,21 @@ const icalDayToEnglish = icalDay => {
   })[icalDay];
 };
 
+// Important: assumes s2 > s1 and e2 > e1;
+const rangeMinDistance = (s1, e1, s2, e2) => {
+  if (s1 > s2) { // swap if the first range starts before the second
+    var tmp1 = s1;
+    var tmp2 = e1;
+    s1 = s2;
+    e1 = e2;
+    s2 = tmp1;
+    e2 = tmp2;
+  }
+
+  return Math.min(e2 - s1, s2 - e1);
+
+};
+
 const getICSIntervals = ics => {
   var lines = ics.split("\n");
   var line, parts, type, arg;
@@ -73,7 +88,11 @@ const getICSIntervals = ics => {
   var curInterval = {};
 
   var time;
+  var date;
   var days;
+
+  curInterval.location = "";
+  curInterval.ignore = false;
 
   for (index = 0; index < lines.length; index++) {
     line = lines[index];
@@ -88,22 +107,24 @@ const getICSIntervals = ics => {
     }
 
     if (type == "SUMMARY") {
-      curInterval.summary = arg;
+      curInterval.name = arg;
     }
 
     if (type == "DTSTART") {
-      time = arg.split("T")[1];
-      curInterval.start = icsTimeToTime(parseInt(time));
+      [date, time] = arg.split("T");
+      curInterval.start_date = date
+      curInterval.start_time = icsTimeToTime(parseInt(time));
     }
     if (type == "DTEND") {
-      time = arg.split("T")[1];
-      curInterval.end = icsTimeToTime(parseInt(time));
+      [date, time] = arg.split("T");
+      curInterval.end_date = date
+      curInterval.end_time = icsTimeToTime(parseInt(time));
     }
 
     if (type == "RRULE") {
       days = arg.match(/BYDAY=(.*)/)[1];
       if (days) {
-        curInterval.days = days.split(",");
+        curInterval.days_of_week = days.replace(/,/g, " ");
       }
     }
 
@@ -114,4 +135,7 @@ const getICSIntervals = ics => {
 
 };
 
-module.exports = getICSIntervals;
+module.exports = {
+  parseICS: getICSIntervals,
+  rangeMinDistance: rangeMinDistance
+};
