@@ -7,7 +7,7 @@ window.onload = function() {
 function populateFriendBar() {
 	$.ajax({
 		type: "POST",
-		url : "/friends",
+		url : "/findAllUsers",
 		success: function(res) {
 			console.log(res);
 			pushFriendsToBar(res);
@@ -20,28 +20,38 @@ function getAllEventsFromServer() {
 		type: "POST",
 		url : "/findeventall",
 		success: function(res) {
-			console.log(res);
 			pushEventsToHTML(res);
 		}
 	});
 }
 
 function pushFriendsToBar(res) {
-	var listWrapper = document.getElementById('header-bar');
+	res = JSON.parse(res);
+	
+	var listWrapper = document.getElementById('sidebar-list');
 	for (var i = 0 ; i < res.length; i++){
 		var currFriend = res[i];
+		
+		console.log(currFriend);
 		
 		var enclosingList = document.createElement('li');
 		var innerLink = document.createElement('a');
 		
-		innerLink.innerHTMl = currFriend;
+		innerLink.innerHTML = currFriend.user.google.name;
 		innerLink.setAttribute('class', 'folder');
 		innerLink.setAttribute('href', '#' + currFriend);
-		innerLink.setAttribute('currFriend', currFriend);
+		innerLink.setAttribute('currFriend', currFriend.user.google.id);
 		
-		enclosingList.addEventListener('click', function(currFriend) {
+		enclosingList.addEventListener('click', function(friend) {
 			return function() {
-				console.log(currFriend);
+				$.ajax({
+					type: "POST",
+					url : "/addFriend",
+					data : JSON.stringify({"friend" : friend}),
+					success: function(res) {
+						console.log("successful add of "  + friend);
+					}
+				});
 			};
 		}(innerLink.getAttribute('currFriend')));
 		

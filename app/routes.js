@@ -122,6 +122,12 @@ module.exports = function(app, passport){
 
         });
 
+		app.post('/findAllUsers', function(req, res) {
+			User.find({}, function(err, docs) {
+				res.send(JSON.stringify(docs));
+			});
+		});
+		
         app.post('/friends', isLoggedIn, function(req, res) {
                 var friends = req.user.user.data.friends;
                 res.setHeader('Content-Type', 'application/json');
@@ -138,6 +144,7 @@ module.exports = function(app, passport){
                 var user = req.user;
                 user.user.data.friends.push(friend);
                 user.save();
+				res.end("FINISHED");
         });
 
         app.post('/removefriend', function(req, res) {
