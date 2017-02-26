@@ -87,6 +87,7 @@ const getICSIntervals = ics => {
   var intervalIndex = -1;
   var curInterval = {};
 
+  var split;
   var time;
   var date;
   var days;
@@ -111,12 +112,16 @@ const getICSIntervals = ics => {
     }
 
     if (type == "DTSTART") {
-      [date, time] = arg.split("T");
+      split = arg.split("T");
+      date = split[0];
+      time = split[1];
       curInterval.start_date = date
       curInterval.start_time = icsTimeToTime(parseInt(time));
     }
     if (type == "DTEND") {
-      [date, time] = arg.split("T");
+      split = arg.split("T");
+      date = split[0];
+      time = split[1];
       curInterval.end_date = date
       curInterval.end_time = icsTimeToTime(parseInt(time));
     }
