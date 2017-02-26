@@ -144,7 +144,7 @@ module.exports = function(app, passport){
 			var schedule = {};
 		});
 		
-		app.post('/findFreeFriends', fuction(req, res) {
+		app.post('/findFreeFriends', function(req, res) {
 			var user = req.user;
 			
 		});
