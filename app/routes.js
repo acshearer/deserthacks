@@ -13,7 +13,7 @@ module.exports = function(app, passport){
         // ::: VIEWS :::
 
         app.get('/profile', function(req, res) {
-			res.render('profile.ejs');
+                res.render('profile.ejs');
         });
 
         app.get('/login', function(req, res) {
@@ -40,10 +40,10 @@ module.exports = function(app, passport){
 
         // ::: USER-CREATED EVENTS HANDLING :::
 
-		app.post('/getCurrentEvents', function(req, res) {
-			
-		});
-		
+        app.post('/getCurrentEvents', function(req, res) {
+
+        });
+
         app.get('/testAddEvent', function(req, res) {
                 res.render('testEventAdd.ejs');
         });
@@ -85,15 +85,15 @@ module.exports = function(app, passport){
         });
 
         app.post('/findEventAll', function(req, res) {
-		res.json({
-			"version": "1.0",
-      			"response": {
-			"shouldEndSession": true,
-			"outputSpeech": {
-			  "type": "SSML",
-			  "ssml": "<speak>Test</speak>"
-			}}
-		});
+                res.json({
+                        "version": "1.0",
+                        "response": {
+                                "shouldEndSession": true,
+                                "outputSpeech": {
+                                        "type": "SSML",
+                                        "ssml": "<speak>Test</speak>"
+                                }}
+                });
         });
 
         app.post('/findEventByFriend', function(req, res) {
@@ -119,35 +119,35 @@ module.exports = function(app, passport){
 
         });
 
-		app.post('/searchFriendById', function(req, res) {
-			var idToCheck = req.body.friendId;
-			res.end(JSON.stringify(getDocumentFromId(idToCheck)));
-		});
-		
+        app.post('/searchFriendById', function(req, res) {
+                var idToCheck = req.body.friendId;
+                res.end(JSON.stringify(getDocumentFromId(idToCheck)));
+        });
+
         app.post('/addfriend', function(req, res) {
-			var friend = req.body.friend;
-			var user = req.user;
-			user.user.data.friends.push(friend);
+                var friend = req.body.friend;
+                var user = req.user;
+                user.user.data.friends.push(friend);
         });
 
         app.post('/removefriend', function(req, res) {
-			var friend = req.body.friend;
-			User.find('user.google.id', friend, function(err, docs){
-				docs.remove();
-			});
+                var friend = req.body.friend;
+                User.find('user.google.id', friend, function(err, docs){
+                        docs.remove();
+                });
         });
-		
-		app.post('/seeIfFree', function(req, res) {
-			var idToCheck = req.body.friendId;
-			var documentToCheck = getDocumentFromId(idToCheck);
-			
-			var schedule = {};
-		});
-		
-		app.post('/findFreeFriends', function(req, res) {
-			var user = req.user;
-			
-		});
+
+        app.post('/seeIfFree', function(req, res) {
+                var idToCheck = req.body.friendId;
+                var documentToCheck = getDocumentFromId(idToCheck);
+
+                var schedule = {};
+        });
+
+        app.post('/findFreeFriends', function(req, res) {
+                var user = req.user;
+
+        });
 
         // ::: SCHEDULE(RECURRING) STUFF :::
 
@@ -176,21 +176,20 @@ module.exports = function(app, passport){
 }
 
 function getDocumentFromId(id){
-	User.findOne({'user.google.id' : id }, function(err, docs) {
-		if (err)
-			return {};
-		return docs;
-	});
+        User.findOne({'user.google.id' : id }, function(err, docs) {
+                if (err)
+                        return {};
+                return docs;
+        });
 }
 
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
-		// if user is authenticated in the session, carry on
-		if (req.isAuthenticated())
-			return next();
+        // if user is authenticated in the session, carry on
+        if (req.isAuthenticated())
+                return next();
 
-		// if they aren't redirect them to the home page
-		res.redirect('/login');
-	}
+        // if they aren't redirect them to the home page
+        res.redirect('/login');
 }
