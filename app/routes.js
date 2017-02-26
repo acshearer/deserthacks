@@ -26,7 +26,11 @@ module.exports = function(app, passport){
                         failureRedirect : '/login'
                 }));
 
-        app.get('/createevent', function(req, res) {
+        app.get('/createevent', isLoggedIn, function(req, res) {
+          res.render('addevent.ejs', {user: req.user});
+        });
+
+        app.post('/createevent', isLoggedIn, function(req, res) {
 
         });
 

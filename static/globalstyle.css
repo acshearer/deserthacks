@@ -1,0 +1,18 @@
+.twocolmidcenter td:first-of-type  {
+  text-align: right;
+  padding-right: 20px;
+  padding-top: 20px;
+}
+
+.twocolmidcenter td:nth-of-type(2) {
+  padding-top: 20px;
+  text-align: left;
+}
+
+#createeventform {
+  width: 600px;
+}
+
+#createeventform > td {
+  margin-top: 10px;
+}
