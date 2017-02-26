@@ -317,8 +317,21 @@ module.exports = function(app, passport){
                                 break;
                         }
                         case "GetEvents": {
-                                Event.aggregate({ $sample: {size: 1} }, (err, eventDocs) => {
-                                        console.log(eventDocs);
+                                Event.aggregate({ $sample: {size: 3} }, (err, eventDocs) => {
+                                        var names = eventDocs.map(edoc => edoc.events.name);
+                                        if (names.length == 0) {
+                                                response = "There are no events scheduled.";
+                                        } else if (names.length == 1) {
+                                                response = "There is one event. It is ";
+                                        } else {
+                                                response = "Here are some events that are scheduled. They're called ";
+                                        }
+
+                                        if (names.length != 0) {
+                                                response += englishConcat(names);
+                                        }
+
+                                        res.json(makeAlexaResponse(response));
                                 });
 
                                 break;
