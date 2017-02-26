@@ -136,23 +136,26 @@ module.exports = function(app, passport){
 
 
                 var now = new Date();
-
-                var day = now.getDay();
-
-                // This is the amount of seconds since midnight.
-                // Sorry for the stupid variable name
-                var secs = now.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())));
-
-                var free = isFree(documentToCheck, day, secs);
+                var free = isFree(documentToCheck, now);
 
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({free: free}));
         });
 
-        app.post('/findFreeFriends', function(req, res) {
+        app.get('/findFreeFriends', function(req, res) {
                 var user = req.user;
 
+                var friends = user.user.data.friends;
+                var now = new Date();
+
+                var freeFriends = friends.filter(friendId => {
+                        const friendDoc = getDocumentFromId(friendId);
+                        return isFree(friendDoc, now);
+                });
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({freeFriends: freeFriends}));
         });
 
         // ::: SCHEDULE(RECURRING) STUFF :::
@@ -226,11 +229,18 @@ module.exports = function(app, passport){
 }
 
 // userDoc is a user document
-// time is the number of seconds since midnight
-function isFree(userDoc, dayNumber, time) {
+// time is a Date object.
+function isFree(userDoc, time) {
         const now = new Date();
         const days = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
         var schedule = userDoc.user.data.schedule;
+
+        var day = time.getDay();
+
+        // This is the amount of seconds since midnight.
+        // Sorry for the stupid variable name
+        var secs = time.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())));
+
         var free = !schedule.some(itemobj => {
                 var item = itemobj.scheduleEvent;
                 if (item.ignore) return true;
