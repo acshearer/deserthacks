@@ -87,6 +87,10 @@ module.exports = function(app, passport){
         });
 
         app.get('/addfriend', isLoggedIn, function(req, res) {
+                req.render('addfriend.ejs');
+
+        });
+
         app.get('/searchusers', /* isLoggedIn, */ function(req, res) {
                 res.render('searchusers.ejs', {user: req.user});
         });
@@ -102,6 +106,9 @@ module.exports = function(app, passport){
                         });
                 }
 
+        });
+
+        app.post('/addfriend', isLoggedIn, function(req, res) {
 
         });
 
