@@ -277,7 +277,10 @@ module.exports = function(app, passport){
                                                                 userDoc.save();
                                                                 response = "Succesfully logged in as " + userDoc.user.google.name + ".";
                                                         }
+
+                                                        res.json(makeAlexaResponse(response));
                                                 });
+                                                break;
                                         } else {
                                                 response = "Invalid pin.";
                                         }
@@ -289,15 +292,7 @@ module.exports = function(app, passport){
                 }
 
 
-                res.json({
-                        "version": "1.0",
-                        "response": {
-                                "shouldEndSession": true,
-                                "outputSpeech": {
-                                        "type": "SSML",
-                                        "ssml": "<speak>" + response + "</speak>"
-                                }}
-                });
+                res.json(makeAlexaResponse(response));
         });
 }
 
@@ -360,6 +355,14 @@ function findFreeFriends(userDoc, callback) {
                         }
                 });
         });
+}
+
+function makeAlexaResponse(responseText) {
+        {"version": "1.0",
+         "response": {"shouldEndSession": true,
+                      "outputSpeech": {
+                                "type": "SSML",
+                                "ssml": "<speak>" + responseText + "</speak>"}}}
 }
 
 function getDocumentFromId(id, callback) {
