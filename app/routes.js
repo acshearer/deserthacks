@@ -1,3 +1,6 @@
+var User = require('../app/User.js');
+var bodyParser = require('body-parser');
+
 module.exports = function(app, passport){
 	app.get('/test', function(req, res) {
 		res.send("ok");
@@ -22,23 +25,63 @@ module.exports = function(app, passport){
                     successRedirect : '/test',
                     failureRedirect : '/login'
             }));
-
-	app.get('/createevent', function(req, res) {
-		
+	
+	// ::: USER CREATED EVENTS :::
+	
+	app.get('/testAddEvent', function(req, res) {
+		res.render('testEventAdd.ejs');
+	});
+	
+	app.post('/createevent', function(req, res) {
+		var events = req.body;
+		var user = req.user;
+		console.log(req.body);
+		var userEvent = JSON.parse(events);
+		user.user.data.events.push(userEvent);
 	});
 
-	app.get('/contactfriend', function(req, res) {
+	app.post('/findeventByTag', function(req, res) {
+		var tagList = req.body.tags;
+		var eventList = [];
+		
+		for (var i = 0 ; i < tagList.length; i++) {
+			var currTab = eventList[i];
+			//User.aggregate([{$match: { 'user.data.events.tags' }}]);
+		}
+	});
+	
+	app.post('/findEventAll', function(req, res) {
 		
 	});
-
-	app.get('/findevent', function(req, res) {
+	
+	app.post('/findEventByFriend', function(req, res) {
+		var friendList = req.body.friends;
+		var eventList = [];
 		
+		for (var i = 0 ; i < friendList.length; i++) {
+			//User.aggregate([]);
+		}
+		
+		db.test.aggregate([
+    // Get just the docs that contain a shapes element where color is 'red'
+    {$match: {'shapes.color': 'red'}},
+    {$project: {
+        shapes: {$filter: {
+            input: '$shapes',
+            as: 'shape',
+            cond: {$eq: ['$$shape.color', 'red']}
+        }},
+        _id: 0
+    }}
+])
 	});
+	
+	// ::: FRIEND HANDLING :::
 
 	app.get('/friendprofile', function(req, res) {
 		
 	});
-
+	
 	app.get('/addfriend', function(req, res) {
 		
 	});
