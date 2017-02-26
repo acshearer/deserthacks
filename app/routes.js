@@ -3,6 +3,7 @@ var User = require('../app/User.js');
 var bodyParser = require('body-parser');
 var escapeStringRegexp = require('escape-string-regexp');
 // var parseICS = require('../app/icsparser.js');
+var alexaVerifier = require('alexa-verifier');
 
 module.exports = function(app, passport){
         app.get('/test', function(req, res) {
@@ -39,6 +40,10 @@ module.exports = function(app, passport){
 
         // ::: USER-CREATED EVENTS HANDLING :::
 
+		app.post('/getCurrentEvents', function(req, res) {
+			
+		});
+		
         app.get('/testAddEvent', function(req, res) {
                 res.render('testEventAdd.ejs');
         });
@@ -79,13 +84,25 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findEventAll', function(req, res) {
+        app.post('/findEventAll', requestVerifier, function(req, res) {
+				/**
                 var eventList = [];
                 Event.find({}, function(err, docs) {
                         eventList = docs;
                         console.log(docs);
                         res.end(JSON.stringify(eventList));
                 });
+				**/
+				
+				var responseJSON = {'version' : '1.0', 'sessionAttributes' : {},
+									'response' : {
+										'shouldEndSession' : true,
+										'outputSpeech' : {
+											'type' : 'SSML', 
+											'ssml' : '<speak> Hello you are a little bitch </speak>'
+										},
+									};
+				res.end(JSON.stringify(responseJSON));
         });
 
         app.post('/findEventByFriend', function(req, res) {
@@ -161,3 +178,17 @@ function isLoggedIn(req, res, next) {
         res.redirect('/login');
 }
 
+function requestVerifier(req, res, next) {
+    alexaVerifier(
+        req.headers.signaturecertchainurl,
+        req.headers.signature,
+        req.rawBody,
+        function verificationCallback(err) {
+            if (err) {
+                res.status(401).json({ message: 'Verification Failure', error: err });
+            } else {
+                next();
+            }
+        }
+    );
+}
