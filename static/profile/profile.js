@@ -31,6 +31,11 @@ window.onload = function() {
 		
 		location.reload();
 	});
+
+        var pinbutton = document.getElementById("pinbutton");
+        pinbutton.addEventListener("click", function() {
+                getPIN();
+        });
 }
 
 function populateFriendBar() {
@@ -43,12 +48,30 @@ function populateFriendBar() {
 	});
 }
 
+function showPIN(pin) {
+        var $pinview = $("<div>")
+                        .text("Your PIN is " + pin + ". Say \"Alexa, ask Locus log me in " + pin + "\"")
+                        .css({position: "absolute", bottom: 10, right: 10});
+
+        $("#pinbutton").replaceWith($pinview);
+}
+
 function getAllEventsFromServer() {
 	$.ajax({
 		type: "POST",
 		url : "/findeventall",
 		success: function(res) {
 			pushEventsToHTML(res);
+		}
+	});
+}
+
+function getPIN() {
+	$.ajax({
+		type: "GET",
+		url : "/alexapin",
+		success: function(res) {
+                        showPIN(res);
 		}
 	});
 }
