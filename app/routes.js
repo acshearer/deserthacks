@@ -262,7 +262,7 @@ module.exports = function(app, passport){
                                 }}
                 });
         });
-}
+}	
 
 function englishConcat(list) {
         if (list.length == 0) {
