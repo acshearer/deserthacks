@@ -1,3 +1,3 @@
 module.exports = {
-	'url' : 'mongodb://steven85048:terry987@ds161049.mlab.com:61049/scheduler999',
+	'url' : 'mongodb://root:password@ds161209.mlab.com:61209/locus_db',
 };
