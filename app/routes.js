@@ -84,25 +84,13 @@ module.exports = function(app, passport){
 
         });
 
-        app.post('/findEventAll', requestVerifier, function(req, res) {
-				/**
+        app.post('/findEventAll', function(req, res) {
                 var eventList = [];
                 Event.find({}, function(err, docs) {
                         eventList = docs;
                         console.log(docs);
                         res.end(JSON.stringify(eventList));
                 });
-				**/
-				
-				var responseJSON = {'version' : '1.0', 'sessionAttributes' : {},
-									'response' : {
-										'shouldEndSession' : true,
-										'outputSpeech' : {
-											'type' : 'SSML', 
-											'ssml' : '<speak> Hello you are a little bitch </speak>'
-										},
-				}};
-				res.end(JSON.stringify(responseJSON));
         });
 
         app.post('/findEventByFriend', function(req, res) {
@@ -128,20 +116,37 @@ module.exports = function(app, passport){
 
         });
 
+		app.post('/searchFriendById', function(req, res) {
+			var idToCheck = req.body.friendId;
+			res.end(JSON.stringify(getDocumentFromId(idToCheck)));
+		});
+		
         app.post('/addfriend', function(req, res) {
-			var friend = res.body.friend;
+			var friend = req.body.friend;
 			var user = req.user;
 			user.user.data.friends.push(friend);
         });
 
         app.post('/removefriend', function(req, res) {
-			var friend = res.body.friend;
+			var friend = req.body.friend;
 			User.find('user.google.id', friend, function(err, docs){
 				docs.remove();
 			});
         });
+		
+		app.post('/seeIfFree', function(req, res) {
+			var idToCheck = req.body.friendId;
+			var documentToCheck = getDocumentFromId(idToCheck);
+			
+			var schedule = {};
+		});
+		
+		app.post('/findFreeFriends', fuction(req, res) {
+			var user = req.user;
+			
+		});
 
-        // ::: SCHEDULE(RECURRING) STUFF ::::
+        // ::: SCHEDULE(RECURRING) STUFF :::
 
         app.get('/addschedule', isLoggedIn, function(req, res) {
                 res.render('addschedule.ejs', {user: req.user});
@@ -167,6 +172,14 @@ module.exports = function(app, passport){
         });
 }
 
+function getDocumentFromId(id){
+	User.findOne({'user.google.id' : id }, function(err, docs) {
+		if (err)
+			return {};
+		return docs;
+	});
+}
+
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
@@ -178,17 +191,3 @@ function isLoggedIn(req, res, next) {
         res.redirect('/login');
 }
 
-function requestVerifier(req, res, next) {
-    alexaVerifier(
-        req.headers.signaturecertchainurl,
-        req.headers.signature,
-        req.rawBody,
-        function verificationCallback(err) {
-            if (err) {
-                res.status(401).json({ message: 'Verification Failure', error: err });
-            } else {
-                next();
-            }
-        }
-    );
-}
