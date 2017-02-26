@@ -251,6 +251,11 @@ module.exports = function(app, passport){
 
         app.post('/alexa', function(req, res) {
                 var body = req.body;
+                if (!body.request.intent) {
+                        req.send(makeAlexaResponse("oops"));
+                        return;
+                }
+
                 var intent = body.request.intent.name;
                 var alexaUserId = body.session.user.userId;
 
@@ -290,7 +295,7 @@ module.exports = function(app, passport){
                                 if (pin >= 1000 && pin < 10000) {
                                         if (pin in userPins) {
                                                 var id = userPins[pin];
-                                                getDocumentFromId(id, userDoc => {
+                                                getDocumentFromId(id, userDoc=> {
                                                         if (!userDoc || Object.keys(userDoc).length === 0) {
                                                                 response = "That user doesn't exist anymore.";
                                                         } else {
