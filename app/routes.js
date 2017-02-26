@@ -11,7 +11,7 @@ module.exports = function(app, passport){
         // ::: VIEWS :::
 
         app.get('/profile', function(req, res) {
-
+			res.render('profile.ejs');
         });
 
         app.get('/login', function(req, res) {
