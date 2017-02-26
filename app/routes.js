@@ -162,12 +162,40 @@ module.exports = function(app, passport){
         });
 
         app.post('/addschedule', function(req, res) {
+                var user = req.user;
                 var ical = req.body.ical;
                 if (typeof ical === "string") {
-                        var parsed = require("../app/icsparser")(req.body.ical)
-                        console.log(parsed);
+                        var parsed = ICS.parseICS(req.body.ical)
+                        parsed.forEach(item => {
+                                user.user.data.schedule.push({
+                                        scheduleEvent: {
+                                                name: item.name,
+                                                location: item.location,
+                                                ignore: item.ignore,
+                                                start_date: item.start_date,
+                                                end_date: item.end_date,
+                                                days_of_week: item.days_of_week,
+                                                start_time: item.start_time,
+                                                end_time: item.end_time
+                                        }
+                                });
+
+                        });
+
+                        user.save();
+                        console.log(user.user.data.schedule);
                 }
 
+        });
+
+        app.post('/clearschedule', function(req, res) {
+                req.user.user.data.schedule = [];
+                req.user.save();
+        });
+
+        app.get('/schedule', function(req, res) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(req.user.user.data.schedule));
         });
 
         app.get('/removescheduleelement', function(req, res) {
