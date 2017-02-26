@@ -54,7 +54,7 @@ module.exports = function(app, passport){
                 var newEvent = new Event();
 
                 newEvent.events.tags = events.tags;
-                newEvent.events.friends = events.friends;
+                newEvent.events.friendsVisible = events.friendsVisible;
                 newEvent.events.time_started = events.time_started;
                 newEvent.events.time_ended = events.time_ended;
                 newEvent.events.name = events.name;
@@ -88,9 +88,17 @@ module.exports = function(app, passport){
 			Event.find({}, function(err, docs) {
 				res.send(JSON.stringify(docs));
 			});
+        app.get('/findeventall', isLoggedIn, function(req, res) {
+                var user = req.user;
+
+                var result = {};
+                Event.find({ 'events.friendsVisible.friend': user.user.google.id }, (err, docs) => {
+                        docs.forEach(eventDoc => {
+                        });
+                });
         });
 
-        app.post('/findeventbyfriend', function(req, res) {
+        app.get('/findeventbyfriend', function(req, res) {
 
         });
 
@@ -111,6 +119,12 @@ module.exports = function(app, passport){
                         });
                 }
 
+        });
+
+        app.post('/friends', isLoggedIn, function(req, res) {
+                var friends = req.user.user.data.friends;
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(friends));
         });
 
         app.post('/searchFriendById', function(req, res) {
@@ -146,13 +160,7 @@ module.exports = function(app, passport){
         app.get('/findFreeFriends', function(req, res) {
                 var user = req.user;
 
-                var friends = user.user.data.friends;
-                var now = new Date();
-
-                var freeFriends = friends.filter(friendId => {
-                        const friendDoc = getDocumentFromId(friendId);
-                        return isFree(friendDoc, now);
-                });
+                freeFriends = findFreeFriends(user);
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({freeFriends: freeFriends}));
@@ -216,16 +224,56 @@ module.exports = function(app, passport){
         
 
         app.post('/alexa', function(req, res) {
+                var body = req.body;
+                var intent = body.request.intent.name;
+
+                var response = "";
+
+                switch(intent) {
+                        case "FreeFriends": {
+                                var freeFriends = findFreeFriends(req.user);
+                                var names = freeFriends.map(friendId => {
+                                        const friendDoc = getDocumentFromId(friendId);
+                                        return friendDoc.user.google.name;
+                                });
+
+                                nameList = englishConcat(names);
+
+                                if (names.length == 0) {
+                                        response = "You have no free friends right now. Perhaps you should make some?";
+                                } else if (names.length == 1) {
+                                        response = "Your only free friend right now is " + names[0];
+                                } else {
+                                        response = "You have " + names.length + " free friends right now. ";
+                                        response += "They are " + namelist + ".";
+
+                                }
+                        }
+                }
+
+
                 res.json({
                         "version": "1.0",
                         "response": {
                                 "shouldEndSession": true,
                                 "outputSpeech": {
                                         "type": "SSML",
-                                        "ssml": "<speak>Test</speak>"
+                                        "ssml": "<speak>" + response + "</speak>"
                                 }}
                 });
         });
+}
+
+function englishConcat(list) {
+        if (list.length == 0) {
+                return "";
+        } else if (list.length == 1) {
+                return list[0];
+        } else if (list.length == 2) {
+                return list[1] + " and " + list[2];
+        } else {
+                return list.slice(0, -1).join(", ") + ", or " + list[list.length-1];
+        }
 }
 
 // userDoc is a user document
@@ -255,6 +303,18 @@ function isFree(userDoc, time) {
 
         });
 
+}
+
+function findFreeFriends(userDoc) {
+        var friends = userDoc.user.data.friends;
+        var now = new Date();
+
+        var freeFriends = friends.filter(friendId => {
+                const friendDoc = getDocumentFromId(friendId);
+                return isFree(friendDoc, now);
+        });
+
+        return freeFriends;
 }
 
 function getDocumentFromId(id){
