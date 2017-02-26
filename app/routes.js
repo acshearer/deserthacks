@@ -2,6 +2,7 @@ var Event = require('../app/Event.js');
 var User = require('../app/User.js');
 var bodyParser = require('body-parser');
 var escapeStringRegexp = require('escape-string-regexp');
+// var parseICS = require('../app/icsparser.js');
 
 module.exports = function(app, passport){
         app.get('/test', function(req, res) {
@@ -135,7 +136,16 @@ module.exports = function(app, passport){
 
         // ::: SCHEDULE(RECURRING) STUFF ::::
 
-        app.get('/addschedule', function(req, res) {
+        app.get('/addschedule', isLoggedIn, function(req, res) {
+                res.render('addschedule.ejs', {user: req.user});
+        });
+
+        app.post('/addschedule', function(req, res) {
+                var ical = req.body.ical;
+                if (typeof ical === "string") {
+                        var parsed = require("../app/icsparser")(req.body.ical)
+                        console.log(parsed);
+                }
 
         });
 

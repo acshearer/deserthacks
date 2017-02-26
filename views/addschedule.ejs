@@ -1,0 +1,59 @@
+<%- include('header.ejs') %>
+
+<style>
+#dropzone {
+        color: #222222;
+        border: 2px dashed lightgrey;
+        width: 500px;
+        height: 200px;
+        line-height: 200px;
+        text-align: center;
+        vertical-align: middle;
+}
+</style>
+
+<div id="dropzone">Drop .ics file here</div>
+<script>
+
+const sendData = data => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/addschedule", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = () => {
+                if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                }
+        };
+        xhr.send(JSON.stringify({ical: data}));
+};
+
+const handleFileSelect = e => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var files = e.dataTransfer.files; // FileList object.
+        var icsfile = files[0];
+        if (!icsfile) {
+                return;
+        }
+
+        var reader = new FileReader();
+        reader.readAsBinaryString(icsfile);
+        reader.onloadend = () => {
+                sendData(reader.result);
+        };
+
+};
+
+
+const handleDragOver = e => {
+        e.stopPropagation();
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+};
+
+
+var dropZone = document.getElementById('dropzone');
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileSelect, false);
+</script>
+<%- include('footer.ejs') %>
