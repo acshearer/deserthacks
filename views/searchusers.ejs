@@ -1,0 +1,44 @@
+<%- include('header.ejs', {user: user}) %>
+
+<p>Search by name:
+<p><input type="text" id="namefield" />
+<p><button id="searchbutton">Search</button>
+
+<p>Results:
+<p>
+<table id="searchresults">
+</table>
+
+<script>
+var nameField = document.getElementById("namefield");
+var searchButton = document.getElementById("searchbutton");
+var resultsTable = document.getElementById("searchresults");
+
+searchButton.addEventListener("click", () => {
+  var nameQuery = nameField.value;
+  if (nameQuery.trim().length > 0) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/searchusers", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+        var users = JSON.parse(xhr.responseText);
+        displayUserList(users);
+      }
+    };
+    xhr.send(JSON.stringify({namequery: nameQuery}));
+  }
+});
+
+var displayUserList = users => {
+  if (users.length == 0) {
+    resultsTable.innerHTML = "<tr><td>No results!</td></tr>";
+  } else {
+    resultsTable.innerHTML = "<tr><th>Name</th><th>Email</th></tr>";
+    users.forEach(user => {
+      resultsTable.innerHTML += "<tr><td>" + user.name + "</td><td>" + user.email + "</td></tr>";
+    });
+  }
+};
+</script>
+<%- include('footer.ejs') %>

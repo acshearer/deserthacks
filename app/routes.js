@@ -1,6 +1,7 @@
 var Event = require('../app/Event.js');
 var User = require('../app/User.js');
 var bodyParser = require('body-parser');
+var escapeStringRegexp = require('escape-string-regexp');
 
 module.exports = function(app, passport){
         app.get('/test', function(req, res) {
@@ -86,6 +87,21 @@ module.exports = function(app, passport){
         });
 
         app.get('/addfriend', isLoggedIn, function(req, res) {
+        app.get('/searchusers', /* isLoggedIn, */ function(req, res) {
+                res.render('searchusers.ejs', {user: req.user});
+        });
+
+        app.post('/searchusers', function(req, res) {
+                var namequery = req.param('namequery');
+                if (namequery) {
+                        User.find({
+                                'user.google.name': new RegExp(escapeStringRegexp(namequery), "i")
+                        }).select({'user.google.name': 1, 'user.google.email': 1}).exec((error, users) => {
+                                res.setHeader('Content-Type', 'application/json');
+                                res.send(JSON.stringify(users.map(user => user.user.google)));
+                        });
+                }
+
 
         });
 
