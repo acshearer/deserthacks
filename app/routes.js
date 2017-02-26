@@ -312,7 +312,7 @@ module.exports = function(app, passport){
                                 break;
                         }
                         case "GetEvents": {
-                                Events.aggregate({ $sample: {size: 1} }, (err, eventDocs) {
+                                Events.aggregate({ $sample: {size: 1} }, (err, eventDocs) => {
                                         console.log(eventDocs);
                                 });
 
