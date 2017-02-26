@@ -270,7 +270,7 @@ module.exports = function(app, passport){
                                         if (pin in userPins) {
                                                 var id = userPins[pin];
                                                 getDocumentFromId(id, userDoc => {
-                                                        if (!user || Object.keys(userDoc).length === 0) {
+                                                        if (!userDoc || Object.keys(userDoc).length === 0) {
                                                                 response = "That user doesn't exist anymore.";
                                                         } else {
                                                                 userDoc.user.data.alexaUserId = alexaUserId;
