@@ -302,7 +302,7 @@ function isFree(userDoc, time) {
 }
 
 function findFreeFriends(userDoc) {
-        var friends = user.user.data.friends;
+        var friends = userDoc.user.data.friends;
         var now = new Date();
 
         var freeFriends = friends.filter(friendId => {
