@@ -280,7 +280,7 @@ module.exports = function(app, passport){
 
                                                         res.json(makeAlexaResponse(response));
                                                 });
-                                                break;
+                                                return;
                                         } else {
                                                 response = "Invalid pin.";
                                         }
