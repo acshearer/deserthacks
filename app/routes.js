@@ -89,6 +89,9 @@ module.exports = function(app, passport){
 
         });
 
+        app.get('/friends', isLoggedIn, function(req, res) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(req.user.user.data.friends));
         });
 
         app.get('/login', function(req, res) {
