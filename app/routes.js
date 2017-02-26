@@ -201,13 +201,13 @@ module.exports = function(app, passport){
                 res.send(JSON.stringify(req.user.user.data.schedule));
         });
 
-        app.get('/removescheduleelement', function(req, res) {
+        app.post('/removescheduleelement', function(req, res) {
 
         });
 
         // ::: EXTRANEOUS METHODS :::
 
-        app.get('/changeuservisibility', function(req, res) {
+        app.post('/changeuservisibility', function(req, res) {
 
         });
 
