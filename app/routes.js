@@ -133,7 +133,21 @@ module.exports = function(app, passport){
                 var idToCheck = req.body.friendId;
                 var documentToCheck = getDocumentFromId(idToCheck);
 
-                var schedule = {};
+
+
+                var now = new Date();
+
+                var day = now.getDay();
+
+                // This is the amount of seconds since midnight.
+                // Sorry for the stupid variable name
+                var secs = now.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())));
+
+                var free = isFree(documentToCheck, day, secs);
+
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({free: free}));
         });
 
         app.post('/findFreeFriends', function(req, res) {
@@ -181,6 +195,28 @@ module.exports = function(app, passport){
                                 }}
                 });
         });
+}
+
+// userDoc is a user document
+// time is the number of seconds since midnight
+function isFree(userDoc, dayNumber, time) {
+        const now = new Date();
+        const days = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+        var schedule = userDoc.user.data.schedule;
+        var free = !schedule.some(itemobj => {
+                var item = itemobj.scheduleEvent;
+                if (item.ignore) return true;
+
+                var days = item.days_of_week.split(" ").map(day => days[day]);
+
+                if (days.indexOf(dayNumber) > -1) {
+                        return secs >= item.start_time && secs <= item.end_time;
+                }
+
+                return false;
+
+        });
+
 }
 
 function getDocumentFromId(id){
