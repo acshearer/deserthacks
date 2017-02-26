@@ -1,6 +1,6 @@
 module.exports = function(app, passport){
 	app.get('/', function(req, res) {
-		res.redirect('/login');
+                res.render('facade.ejs');       
 	});
         app.get('/test', function(req, res) {
                 res.send("ok");
