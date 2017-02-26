@@ -111,28 +111,18 @@ module.exports = function(app, passport){
 
         });
 
-        app.get('/getFriendByName', function(req, res){
-
-        });
-
-
-        app.get('/addfriend', isLoggedIn, function(req, res) {
-                req.render('addfriend.ejs');
-
-        });
-
         app.post('/addfriend', function(req, res) {
-
+			var friend = res.body.friend;
+			var user = req.user;
+			user.user.data.friends.push(friend);
         });
 
-        app.get('/removefriend', function(req, res) {
-
+        app.post('/removefriend', function(req, res) {
+			var friend = res.body.friend;
+			User.find('user.google.id', friend), function(err, docs){
+				docs.remove();
+			});
         });
-
-        app.get('/friendprofile', function(req, res) {
-
-        });
-
 
         // ::: SCHEDULE(RECURRING) STUFF ::::
 
@@ -159,7 +149,6 @@ module.exports = function(app, passport){
 
         });
 }
-
 
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
