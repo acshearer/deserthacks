@@ -33,6 +33,10 @@
 	width: 300px;
 }
 
+.friendListElement{
+	background-color: gray;
+	width: 100%;
+}
 
 #main_container {
 	margin-left: 200px;
