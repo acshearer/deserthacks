@@ -226,8 +226,8 @@ module.exports = function(app, passport){
                 var user = req.user;
                 var pin = Math.floor(Math.random() * 9000) + 1000;
                 userPins[pin] = user.user.google.id;
-                req.setHeader('Content-Type', 'text/plain');
-                req.send(pin.toString());
+                res.setHeader('Content-Type', 'text/plain');
+                res.send(pin.toString());
         });
 
 
