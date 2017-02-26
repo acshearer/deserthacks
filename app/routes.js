@@ -14,7 +14,7 @@ module.exports = function(app, passport){
 
         // ::: VIEWS :::
 
-        app.get('/profile', function(req, res) {
+        app.get('/profile', isLoggedIn, function(req, res) {
                 res.render('profile.ejs', {user : req.user});
         });
 
