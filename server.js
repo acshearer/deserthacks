@@ -29,7 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // static file handling
-app.use(express.static(__dirname + '/views'));
+app.use(express.static(__dirname + '/static'));
 
 // initialize the routes
 require('./app/routes.js')(app, passport);
