@@ -245,23 +245,22 @@ module.exports = function(app, passport){
                         case "FreeFriends": {
                                 if (!user) break;
 
-                                var freeFriends = findFreeFriends(user);
-                                var names = freeFriends.map(friendId => {
-                                        const friendDoc = getDocumentFromId(friendId);
-                                        return friendDoc.user.google.name;
+                                findFreeFriends(user, freeFriends => {
+                                        var names = freeFriends.map(friendDoc => {
+                                                friendDoc.user.google.name;
+                                        });
+                                        nameList = englishConcat(names);
+
+                                        if (names.length == 0) {
+                                                response = "You have no free friends right now. Perhaps you should make some?";
+                                        } else if (names.length == 1) {
+                                                response = "Your only free friend right now is " + names[0];
+                                        } else {
+                                                response = "You have " + names.length + " free friends right now. ";
+                                                response += "They are " + namelist + ".";
+
+                                        }
                                 });
-
-                                nameList = englishConcat(names);
-
-                                if (names.length == 0) {
-                                        response = "You have no free friends right now. Perhaps you should make some?";
-                                } else if (names.length == 1) {
-                                        response = "Your only free friend right now is " + names[0];
-                                } else {
-                                        response = "You have " + names.length + " free friends right now. ";
-                                        response += "They are " + namelist + ".";
-
-                                }
                                 break;
                         }
                         case "LogIn": {
@@ -270,14 +269,15 @@ module.exports = function(app, passport){
                                 if (pin >= 1000 && pin < 10000) {
                                         if (pin in userPins) {
                                                 var id = userPins[pin];
-                                                var userDoc = getDocumentFromId(id);
-                                                if (!user || Object.keys(userDoc).length === 0) {
-                                                        response = "That user doesn't exist anymore.";
-                                                } else {
-                                                        userDoc.user.data.alexaUserId = alexaUserId;
-                                                        userDoc.save();
-                                                        response = "Succesfully logged in as " + userDoc.user.google.name + ".";
-                                                }
+                                                getDocumentFromId(id, userDoc => {
+                                                        if (!user || Object.keys(userDoc).length === 0) {
+                                                                response = "That user doesn't exist anymore.";
+                                                        } else {
+                                                                userDoc.user.data.alexaUserId = alexaUserId;
+                                                                userDoc.save();
+                                                                response = "Succesfully logged in as " + userDoc.user.google.name + ".";
+                                                        }
+                                                });
                                         } else {
                                                 response = "Invalid pin.";
                                         }
@@ -340,23 +340,31 @@ function isFree(userDoc, time) {
 
 }
 
-function findFreeFriends(userDoc) {
+function findFreeFriends(userDoc, callback) {
         var friends = userDoc.user.data.friends;
         var now = new Date();
 
-        var freeFriends = friends.filter(friendId => {
-                const friendDoc = getDocumentFromId(friendId);
-                return isFree(friendDoc, now);
-        });
+        var freeFriends = [];
 
-        return freeFriends;
+        var count = 0;
+        friends.filter(friendId => {
+                const friendDoc = getDocumentFromId(friendId, (friendDoc) => {
+                        if (isFree(friendDoc, now)) {
+                                freeFriends.add(friendDoc);
+                        }
+                        count++;
+                        if (count >= friends.length) {
+                                callback(freeFriends);
+                        }
+                });
+        });
 }
 
-function getDocumentFromId(id){
+function getDocumentFromId(id, callback) {
         User.findOne({'user.google.id' : id }, function(err, docs) {
                 if (err)
-                        return {};
-                return docs;
+                        callback({});
+                return callback(docs);
         });
 }
 
