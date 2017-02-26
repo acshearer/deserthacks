@@ -358,11 +358,11 @@ function findFreeFriends(userDoc, callback) {
 }
 
 function makeAlexaResponse(responseText) {
-        {"version": "1.0",
+        return ({"version": "1.0",
          "response": {"shouldEndSession": true,
                       "outputSpeech": {
                                 "type": "SSML",
-                                "ssml": "<speak>" + responseText + "</speak>"}}}
+                                "ssml": "<speak>" + responseText + "</speak>"}}});
 }
 
 function getDocumentFromId(id, callback) {
