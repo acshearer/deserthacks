@@ -102,7 +102,7 @@ module.exports = function(app, passport){
 
         // ::: FRIEND HANDLING :::
 
-        app.get('/searchusers', /* isLoggedIn, */ function(req, res) {
+        app.get('/searchusers', isLoggedIn, function(req, res) {
                 res.render('searchusers.ejs', {user: req.user});
         });
 
