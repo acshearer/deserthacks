@@ -119,7 +119,7 @@ module.exports = function(app, passport){
 
         app.post('/removefriend', function(req, res) {
 			var friend = res.body.friend;
-			User.find('user.google.id', friend), function(err, docs){
+			User.find('user.google.id', friend, function(err, docs){
 				docs.remove();
 			});
         });
