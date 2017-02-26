@@ -110,21 +110,11 @@ module.exports = function(app, passport){
 
         });
 
-        app.get('/getFriendByName', function(req, res){
-
-        });
-
-
-        app.get('/addfriend', isLoggedIn, function(req, res) {
-                req.render('addfriend.ejs');
-
-        });
-
         app.post('/addfriend', function(req, res) {
 
         });
 
-        app.get('/removefriend', function(req, res) {
+        app.post('/removefriend', function(req, res) {
 
         });
 
